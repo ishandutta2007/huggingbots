@@ -27,15 +27,8 @@ import uuid
 import glob
 
 #todo
-# add safetychecks to all parts, test thoroughly
-# add discord channels, configure for fellows
-# add debugging messages, same as in deepfloydif, to the_painter
 # experiment with animeGANv2
-
-#✅ 4 -> combined image
-# loading emoji? animated emojis?
-# make success / fail emojis more consistent across both painter + dfif
-#✅ tasks for concurrent coroutines
+#✅ tasks for concurrent coroutines (now jobs)
 # ratelimits
 
 # enlarge each of 4 images?
