@@ -4,7 +4,7 @@ with:
   github_repo_id: 'lunarflu/gradiotest2'
 
   # The Hugging Face repo id you want to sync to. (ex. 'username/reponame')
-  # A repo with this name will be created if it doesn't exist. Required.
+  # A repo with this name will be created if it doesn't exist. Required..
   huggingface_repo_id: 'lunarflu/gradiotest'
 
   # Hugging Face token with write access. Required.
