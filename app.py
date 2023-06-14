@@ -568,21 +568,26 @@ falcon_threads = []
 async def falconprivate(ctx):
     try:
         global falcon_chats
-        if ctx.channel.id == 1116089829147557999: # #falcon
+        global falcon_threads
+        if ctx.channel.id == 1116089829147557999: # initial thread creation inside #falcon
             if ctx.author.id not in falcon_chats: # create a new one
                 thread = await ctx.message.create_thread(name=f'{ctx.author}')
                 falcon_chats = [ctx.author.id] + falcon_chats
+                falcon_threads = [thread.id] + falcon_threads
                 await thread.send(f"Thread created")
 
             elif ctx.author.id in falcon_chats:
                 await ctx.reply(f"{ctx.author.mention}, you already have an existing conversation! ")
-        thread = ctx.channel
-        if thread.name == ctx.author:
+ 
+        if ctx.channel.id in falcon_threads: # subsequent chatting inside threads of #falcon
             await ctx.reply(f"inside thread, only {ctx.author} is allowed to chat here")
+            
     except Exception as e:
         print(f"Error: {e}")
         await ctx.reply(f"{e} cc <@811235357663297546> (falconprivate error)")           
 
+        
+        
 @bot.command()
 async def falcon(ctx, *, prompt: str):
     try:
