@@ -578,7 +578,7 @@ async def falconprivate(ctx):
 
         if ctx.channel.name == ctx.author:
             ctx.reply(f"inside thread")
-     except Exception as e:
+    except Exception as e:
         print(f"Error: {e}")
         await ctx.reply(f"{e} cc <@811235357663297546> (falconprivate error)")           
             
