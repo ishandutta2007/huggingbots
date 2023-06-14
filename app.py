@@ -576,9 +576,9 @@ async def falconprivate(ctx):
 
             elif ctx.author.id in falcon_chats:
                 await ctx.reply(f"{ctx.author.mention}, you already have an existing conversation! ")
-
-        if ctx.channel.name == ctx.author:
-            await ctx.reply(f"inside thread")
+        thread = ctx.channel
+        if thread.name == ctx.author:
+            await ctx.reply(f"inside thread, only {ctx.author} is allowed to chat here")
     except Exception as e:
         print(f"Error: {e}")
         await ctx.reply(f"{e} cc <@811235357663297546> (falconprivate error)")           
