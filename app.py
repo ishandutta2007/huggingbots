@@ -568,6 +568,7 @@ chathistory = None
 falcon_users = []
 falcon_threads = []
 falcon_dictionary = {}
+falcon_userid_threadid_dictionary = {}
 
 @bot.command()
 async def falconprivate(ctx, *, prompt: str):
@@ -579,6 +580,7 @@ async def falconprivate(ctx, *, prompt: str):
         global falcon_threads
         global falcon_chats
         global falcon_dictionary
+        global falcon_userid_threadid_dictionary
         if ctx.channel.id == 1116089829147557999: # initial thread creation inside #falcon
             if ctx.author.id not in falcon_users: # create a new one
                 await ctx.message.add_reaction('<a:loading:1114111677990981692>')
@@ -604,6 +606,7 @@ async def falconprivate(ctx, *, prompt: str):
                     data = json.load(file)
                     output_text = data[-1][-1] # we output this as the bot
                 falcon_dictionary[ctx.author.id] = full_generation # 1234567890: tmp12345678.json
+                falcon_userid_threadid_dictionary[ctx.author.id] = thread.id
                 print(output_text)
                 await thread.send(f"{output_text}")     
                 await ctx.message.remove_reaction('<a:loading:1114111677990981692>', bot.user)
@@ -614,24 +617,26 @@ async def falconprivate(ctx, *, prompt: str):
             await ctx.message.add_reaction('<a:loading:1114111677990981692>')
             #await ctx.reply(f"inside thread, only {ctx.author} is allowed to chat here")
             # post all other generations here
-            chathistory = falcon_dictionary[ctx.author.id]
-            
-            instructions = "The following is a conversation between a highly knowledgeable and intelligent AI assistant, called Falcon, and a human user, called User. In the following interactions, User and Falcon will converse in natural language, and Falcon will answer User's questions. Falcon was built to be respectful, polite and inclusive. Falcon was built by the Technology Innovation Institute in Abu Dhabi. Falcon will never decline to answer a question, and always attempts to give an answer that User would be satisfied with. It knows a lot, and always tells the truth. The conversation begins."
-            job = falconclient.submit(prompt, chathistory, instructions, 0.8, 0.9, fn_index=1)  # This is not blocking, similar to run_in_executor (but better)
-            while job.done() == False: 
-                status = job.status() # could be spammy, let's test anyways
-                print(status)
-            else:
-                file_paths = job.outputs()
-                full_generation = file_paths[-1] # tmp12345678.json
-                unique_file_2 = "{}{}".format(ctx.author.id, ".json") # could use ID, more robust
-            with open(full_generation, 'r') as file:
-                data = json.load(file)
-                output_text = data[-1][-1] # we output this as the bot
-            falcon_dictionary[ctx.author.id] = full_generation 
-            print(output_text)
-            await ctx.reply(f"{output_text}")                
-            await ctx.message.remove_reaction('<a:loading:1114111677990981692>', bot.user)
+            thread_id_test = falcon_userid_threadid_dictionary[ctx.author.id]
+            if ctx.channel.id == thread_id_test:
+                chathistory = falcon_dictionary[ctx.author.id]
+
+                instructions = "The following is a conversation between a highly knowledgeable and intelligent AI assistant, called Falcon, and a human user, called User. In the following interactions, User and Falcon will converse in natural language, and Falcon will answer User's questions. Falcon was built to be respectful, polite and inclusive. Falcon was built by the Technology Innovation Institute in Abu Dhabi. Falcon will never decline to answer a question, and always attempts to give an answer that User would be satisfied with. It knows a lot, and always tells the truth. The conversation begins."
+                job = falconclient.submit(prompt, chathistory, instructions, 0.8, 0.9, fn_index=1)  # This is not blocking, similar to run_in_executor (but better)
+                while job.done() == False: 
+                    status = job.status() # could be spammy, let's test anyways
+                    print(status)
+                else:
+                    file_paths = job.outputs()
+                    full_generation = file_paths[-1] # tmp12345678.json
+                    unique_file_2 = "{}{}".format(ctx.author.id, ".json") # could use ID, more robust
+                with open(full_generation, 'r') as file:
+                    data = json.load(file)
+                    output_text = data[-1][-1] # we output this as the bot
+                falcon_dictionary[ctx.author.id] = full_generation 
+                print(output_text)
+                await ctx.reply(f"{output_text}")                
+                await ctx.message.remove_reaction('<a:loading:1114111677990981692>', bot.user)
             
     except Exception as e:
         print(f"Error: {e}")
