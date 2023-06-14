@@ -560,6 +560,47 @@ async def on_reaction_add(reaction, user):    # ctx = await bot.get_context(reac
 #---------------------------------------------------------------------------------------------------------------------------- 
 chathistory = None
 
+
+falcon_chats = []
+falcon_threads = []
+
+@bot.command()
+async def falconprivate(ctx):
+    try:
+        global falcon_chats
+        if ctx.channel.id == 1116089829147557999: # #falcon
+            if ctx.author.id not in falcon_chats: # create a new one
+                thread = await ctx.message.create_thread(name=f'{ctx.author}')
+                falcon_chats = [ctx.author.id] + falcon_chats
+
+            elif ctx.author.id in falcon_chats:
+                ctx.reply(f"{ctx.author.mention}, you already have an existing conversation! ")
+
+        if ctx.channel.name == ctx.author:
+            ctx.reply(f"inside thread")
+     except Exception as e:
+        print(f"Error: {e}")
+        await ctx.reply(f"{e} cc <@811235357663297546> (falconprivate error)")           
+            
+            '''
+            
+            store thread_id in falcon_threads 
+            generate response
+            store response in falcon_chats
+            send response in thread
+            '''
+
+            # store file in custom falcon_chats path
+            # name file in falcon_chats using ctx.author.id
+
+'''
+        if ctx.author.id in falcon_chats:
+            ctx.reply(f"{ctx.author.mention}, you already have an existing conversation! Use [under construction] to start a new one.")
+            # max 1 convo
+            # can only continue in thread
+            # auto clear?
+'''
+        
 @bot.command()
 async def falcon(ctx, *, prompt: str):
     try:
