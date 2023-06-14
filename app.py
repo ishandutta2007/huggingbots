@@ -581,6 +581,7 @@ async def falconprivate(ctx, *, prompt: str):
         global falcon_dictionary
         if ctx.channel.id == 1116089829147557999: # initial thread creation inside #falcon
             if ctx.author.id not in falcon_users: # create a new one
+                await ctx.message.add_reaction('<a:loading:1114111677990981692>')
                 thread = await ctx.message.create_thread(name=f'{ctx.author}')
                 falcon_users = [ctx.author.id] + falcon_users
                 falcon_threads = [thread.id] + falcon_threads
@@ -605,12 +606,13 @@ async def falconprivate(ctx, *, prompt: str):
                 falcon_dictionary[ctx.author.id] = full_generation # 1234567890: tmp12345678.json
                 print(output_text)
                 await thread.send(f"{output_text}")     
-                
+                await ctx.message.remove_reaction('<a:loading:1114111677990981692>', bot.user)
             elif ctx.author.id in falcon_users:
                 await ctx.reply(f"{ctx.author.mention}, you already have an existing conversation! ")
  
         if ctx.channel.id in falcon_threads: # subsequent chatting inside threads of #falcon
-            await ctx.reply(f"inside thread, only {ctx.author} is allowed to chat here")
+            await ctx.message.add_reaction('<a:loading:1114111677990981692>')
+            #await ctx.reply(f"inside thread, only {ctx.author} is allowed to chat here")
             # post all other generations here
             chathistory = falcon_dictionary[ctx.author.id]
             
@@ -627,16 +629,16 @@ async def falconprivate(ctx, *, prompt: str):
                 data = json.load(file)
                 output_text = data[-1][-1] # we output this as the bot
             falcon_dictionary[ctx.author.id] = full_generation 
-            
             print(output_text)
             await ctx.reply(f"{output_text}")                
+            await ctx.message.remove_reaction('<a:loading:1114111677990981692>', bot.user)
             
     except Exception as e:
         print(f"Error: {e}")
         await ctx.reply(f"{e} cc <@811235357663297546> (falconprivate error)")           
-
-        
-        
+        await ctx.message.remove_reaction('<a:loading:1114111677990981692>', bot.user)        
+        await ctx.message.add_reaction('<:disagree:1098628957521313892>')
+    
 @bot.command()
 async def falcon(ctx, *, prompt: str):
     try:
