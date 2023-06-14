@@ -567,14 +567,10 @@ async def on_reaction_add(reaction, user):    # ctx = await bot.get_context(reac
 chathistory = None
 falcon_users = []
 falcon_threads = []
-falcon_chats = [] # 
-
-falcon_id = 0
-
 falcon_dictionary = {}
 
 @bot.command()
-async def falconprivate(ctx):
+async def falconprivate(ctx, *, prompt: str):
     #todo
     #spinning icon while loading
     #finished icon
