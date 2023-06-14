@@ -604,7 +604,7 @@ async def falconprivate(ctx, *, prompt: str):
                     output_text = data[-1][-1] # we output this as the bot
                 falcon_dictionary[ctx.author.id] = full_generation # 1234567890: tmp12345678.json
                 print(output_text)
-                await ctx.reply(f"{output_text}")     
+                await thread.send(f"{output_text}")     
                 
             elif ctx.author.id in falcon_users:
                 await ctx.reply(f"{ctx.author.mention}, you already have an existing conversation! ")
