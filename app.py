@@ -581,26 +581,7 @@ async def falconprivate(ctx):
     except Exception as e:
         print(f"Error: {e}")
         await ctx.reply(f"{e} cc <@811235357663297546> (falconprivate error)")           
-            
-            '''
-            
-            store thread_id in falcon_threads 
-            generate response
-            store response in falcon_chats
-            send response in thread
-            '''
 
-            # store file in custom falcon_chats path
-            # name file in falcon_chats using ctx.author.id
-
-'''
-        if ctx.author.id in falcon_chats:
-            ctx.reply(f"{ctx.author.mention}, you already have an existing conversation! Use [under construction] to start a new one.")
-            # max 1 convo
-            # can only continue in thread
-            # auto clear?
-'''
-        
 @bot.command()
 async def falcon(ctx, *, prompt: str):
     try:
