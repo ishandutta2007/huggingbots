@@ -680,36 +680,37 @@ async def on_message(message):
     # bot
     # channel?
     try:   
-        if on_message_safetychecks(message):
+        if await on_message_safetychecks(message):
             global falcon_userid_threadid_dictionary
             global falcon_dictionary 
             # is this our unique channel (falcon thread?)
-            if message.channel.id == falcon_userid_threadid_dictionary[message.author.id]:
-                await message.add_reaction('<a:loading:1114111677990981692>') # helps the bot appear responsive
-                chathistory = falcon_dictionary[message.author.id]
-                instructions = "The following is a conversation between a highly knowledgeable and intelligent AI assistant, " \
-                "called Falcon, and a human user, called User. In the following interactions, " \
-                "User and Falcon will converse in natural language, and Falcon will answer User's questions. " \
-                "Falcon was built to be respectful, polite and inclusive. " \
-                "Falcon was built by the Technology Innovation Institute in Abu Dhabi. " \
-                "Falcon will never decline to answer a question, and always attempts to give an answer that " \
-                "User would be satisfied with. It knows a lot, and always tells the truth. The conversation begins."
-                # handles the blocking task in the background so the discord bot stays responsive
-                # for added security, we could verify if message.content contains symbols used in commands; But those will fail anyways (see safetychecks)
-                job = falconclient.submit(message.content, chathistory, instructions, 0.8, 0.9, fn_index=1)  # job is similar to run_in_executor (but better)
-                while job.done() == False: 
-                    status = job.status() # this could be used for debugging etc
-                    #print(status)
-                else:
-                    file_paths = job.outputs() # file_paths = ["tmp123.json", "tmp456.json," etc...]
-                    full_generation = file_paths[-1] # the last filepath contains the full generated text
-                    with open(full_generation, 'r') as file:
-                        data = json.load(file)
-                        output_text = data[-1][-1] # we only need the very last/latest string for the discord bot to output
-                    falcon_dictionary[message.author.id] = full_generation # update our unique conversation
-                    print(output_text) 
-                    await message.reply(f"{output_text}") # reply to user's prompt (whatever they typed)               
-                    await message.remove_reaction('<a:loading:1114111677990981692>', bot.user)
+            if message.author.id in falcon_userid_threadid_dictionary:
+                if message.channel.id == falcon_userid_threadid_dictionary[message.author.id]:
+                    await message.add_reaction('<a:loading:1114111677990981692>') # helps the bot appear responsive
+                    chathistory = falcon_dictionary[message.author.id]
+                    instructions = "The following is a conversation between a highly knowledgeable and intelligent AI assistant, " \
+                    "called Falcon, and a human user, called User. In the following interactions, " \
+                    "User and Falcon will converse in natural language, and Falcon will answer User's questions. " \
+                    "Falcon was built to be respectful, polite and inclusive. " \
+                    "Falcon was built by the Technology Innovation Institute in Abu Dhabi. " \
+                    "Falcon will never decline to answer a question, and always attempts to give an answer that " \
+                    "User would be satisfied with. It knows a lot, and always tells the truth. The conversation begins."
+                    # handles the blocking task in the background so the discord bot stays responsive
+                    # for added security, we could verify if message.content contains symbols used in commands; But those will fail anyways (see safetychecks)
+                    job = falconclient.submit(message.content, chathistory, instructions, 0.8, 0.9, fn_index=1)  # job is similar to run_in_executor (but better)
+                    while job.done() == False: 
+                        status = job.status() # this could be used for debugging etc
+                        #print(status)
+                    else:
+                        file_paths = job.outputs() # file_paths = ["tmp123.json", "tmp456.json," etc...]
+                        full_generation = file_paths[-1] # the last filepath contains the full generated text
+                        with open(full_generation, 'r') as file:
+                            data = json.load(file)
+                            output_text = data[-1][-1] # we only need the very last/latest string for the discord bot to output
+                        falcon_dictionary[message.author.id] = full_generation # update our unique conversation
+                        print(output_text) 
+                        await message.reply(f"{output_text}") # reply to user's prompt (whatever they typed)               
+                        await message.remove_reaction('<a:loading:1114111677990981692>', bot.user)
     except Exception as e:
         print(f"Error: {e}")
         if message.channel.id == 1116089829147557999:
