@@ -375,11 +375,11 @@ async def deepfloydif(ctx, *, prompt: str):
             #    prompt, negative_prompt, seed, number_of_images, guidance_scale, custom_timesteps_1, number_of_inference_steps, api_name='/generate64')
 
             # run blocking function in executor
-            await thread.send(f'✅running blocking function in executor')  
+            #await thread.send(f'✅running blocking function in executor')  
             loop = asyncio.get_running_loop()
             result = await loop.run_in_executor(None, inference, prompt)
             await thread.send(f'{ctx.author.mention}after executor')
-            await thread.send(f'✅run_in_executor ran successfully')            
+            #await thread.send(f'✅run_in_executor ran successfully')            
             stage_1_results = result[0]
             stage_1_result_path = result[2]
             
@@ -396,7 +396,7 @@ async def deepfloydif(ctx, *, prompt: str):
             await thread.edit(archived=True)            
         #posting images✅----------------------------------------------------------------    
         try:
-            await thread.send(f'✅combining images...') 
+            #await thread.send(f'✅combining images...') 
             #old, see: https://huggingface.co/spaces/DeepFloyd/IF/commit/fb79844b1d0b013a28ac435a36f804d8030fba50
             #png_files = [f for f in os.listdir(stage_1_results) if f.endswith('.png')] 
             png_files = list(glob.glob(f"{stage_1_results}/**/*.png"))
@@ -431,10 +431,12 @@ async def deepfloydif(ctx, *, prompt: str):
                 combined_image_dfif = await thread.send(f'{ctx.author.mention}React with the image number you want to upscale!', file=discord.File(
                     f, f'{partialpath}{dfif_command_message_id}.png')) # named something like: tmpgtv4qjix1111269940599738479.png 
 
-            await thread.send(f'✅reacting with 1234...') 
+            #await thread.send(f'✅reacting with 1234...') 
             emoji_list = ['↖️', '↗️', '↙️', '↘️']
             await react1234(emoji_list, combined_image_dfif)
-            
+
+            await ctx.message.remove_reaction('<a:loading:1114111677990981692>', bot.user)
+            await ctx.message.add_reaction('<:agree:1098629085955113011>')
             ''' individual images
             if png_files:
                 for i, png_file in enumerate(png_files):
@@ -471,6 +473,11 @@ async def deepfloydif(ctx, *, prompt: str):
 # Stage 2 ✅
 async def dfif2(index: int, stage_1_result_path, thread, dfif_command_message_id): # add safetychecks
     try:
+        parent_channel = thread.parent
+        dfif_command_message = await parent_channel.fetch_message(dfif_command_message_id)
+        await dfif_command_message.remove_reaction(<:agree:1098629085955113011>, bot.user)
+        await dfif_command_message.add_reaction('<a:loading:1114111677990981692>')
+            
         number = index + 1
         if number == 1:
             position = "top left"
@@ -490,8 +497,6 @@ async def dfif2(index: int, stage_1_result_path, thread, dfif_command_message_id
         with open(result_path, 'rb') as f:
             await thread.send(f'Here is the upscaled image! :) ', file=discord.File(f, 'result.png'))
             
-        parent_channel = thread.parent
-        dfif_command_message = await parent_channel.fetch_message(dfif_command_message_id)
         await dfif_command_message.remove_reaction('<a:loading:1114111677990981692>', bot.user)
         await dfif_command_message.add_reaction('<:agree:1098629085955113011>')
         await thread.edit(archived=True)
