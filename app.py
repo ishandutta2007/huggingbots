@@ -554,7 +554,7 @@ async def on_reaction_add(reaction, user):    # ctx = await bot.get_context(reac
         #ctx = await bot.get_context(reaction.message)
         # safety checks first ✅
 
-        
+
         if not user.bot: 
             thread = reaction.message.channel
             threadparentid = thread.parent.id
@@ -611,7 +611,7 @@ async def falcon(ctx, *, prompt: str):
         global falcon_threads
         global falcon_dictionary
         global falcon_userid_threadid_dictionary
-        if await safetychecks(ctx):
+        if ctx.author not user.bot:
             if ctx.channel.id == 1116089829147557999: # initial thread creation inside #falcon
                 if ctx.author.id not in falcon_users: # create a new one
                     await ctx.message.add_reaction('<a:loading:1114111677990981692>')
