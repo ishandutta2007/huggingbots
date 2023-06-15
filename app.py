@@ -656,7 +656,7 @@ async def on_message(message):
             # for added security, we could verify if message.content contains symbols used in commands; But those will fail anyways (see safetychecks)
             job = falconclient.submit(message.content, chathistory, instructions, 0.8, 0.9, fn_index=1)  # job is similar to run_in_executor (but better)
             while job.done() == False: 
-                #status = job.status() # this could be used for debugging etc
+                status = job.status() # this could be used for debugging etc
                 #print(status)
             else:
                 file_paths = job.outputs() # file_paths = ["tmp123.json", "tmp456.json," etc...]
