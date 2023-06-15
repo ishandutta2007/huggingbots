@@ -475,7 +475,7 @@ async def dfif2(index: int, stage_1_result_path, thread, dfif_command_message_id
     try:
         parent_channel = thread.parent
         dfif_command_message = await parent_channel.fetch_message(dfif_command_message_id)
-        await dfif_command_message.remove_reaction(<:agree:1098629085955113011>, bot.user)
+        await dfif_command_message.remove_reaction('<:agree:1098629085955113011>', bot.user)
         await dfif_command_message.add_reaction('<a:loading:1114111677990981692>')
             
         number = index + 1
