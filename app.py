@@ -611,7 +611,7 @@ async def falcon(ctx, *, prompt: str):
         global falcon_threads
         global falcon_dictionary
         global falcon_userid_threadid_dictionary
-        if ctx.author not bot.user:
+        if not ctx.author.bot:
             if ctx.channel.id == 1116089829147557999: # initial thread creation inside #falcon
                 if ctx.author.id not in falcon_users: # create a new one
                     await ctx.message.add_reaction('<a:loading:1114111677990981692>')
