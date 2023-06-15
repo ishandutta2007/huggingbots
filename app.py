@@ -602,7 +602,7 @@ async def falconprivate(ctx, *, prompt: str):
                 job = falconclient.submit(prompt, chathistory, instructions, 0.8, 0.9, fn_index=1)  # This is not blocking, similar to run_in_executor (but better)
                 while job.done() == False: 
                     status = job.status() # could be spammy, let's test anyways
-                    print(status)
+                    #print(status)
                 else:
                     file_paths = job.outputs()
                     full_generation = file_paths[-1] # tmp12345678.json
@@ -630,7 +630,7 @@ async def falconprivate(ctx, *, prompt: str):
                 job = falconclient.submit(prompt, chathistory, instructions, 0.8, 0.9, fn_index=1)  # This is not blocking, similar to run_in_executor (but better)
                 while job.done() == False: 
                     status = job.status() # could be spammy, let's test anyways
-                    print(status)
+                    #print(status)
                 else:
                     file_paths = job.outputs()
                     full_generation = file_paths[-1] # tmp12345678.json
