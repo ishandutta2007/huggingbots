@@ -133,7 +133,43 @@ async def safetychecks(ctx):
         print(f"Error: safetychecks failed somewhere, command will not continue, {e}")
         await ctx.message.reply(f"❌ <@811235357663297546> SC failed somewhere ❌ {e}") # this will always ping, as long as the bot has access to the channel
         await ctx.message.add_reaction(failure_emoji)
-#---------------------------------------------------------------------------------------------------------------------------------------------- 
+#------------------------------------------------------------------------------------------------------------------------------
+async def on_message_safetychecks(message): 
+    failure_emoji = '<:disagree:1098628957521313892>' 
+    try:
+        if message.author.bot:
+            print(f"The bot will ignore its own messages.")
+            return False
+    
+        # check if the bot is offline 
+        offline_bot_role_id = 1103676632667017266
+        bot_member = message.guild.get_member(bot.user.id)
+        if any(role.id == offline_bot_role_id for role in bot_member.roles):
+            print(f"{message.author} The bot is offline or under maintenance. (Remove the offline-bot role to bring it online)") 
+            return False          
+            
+        #✅✅ check if the user has the required role(s)   
+        guild_id = 879548962464493619
+        verified_role_id = 900063512829755413  # @verified = 900063512829755413,  HF = 897376942817419265, fellows = 963431900825919498
+        huggingfolks_role_id = 897376942817419265
+        fellows_role_id = 963431900825919498
+        contentcreator_role_id = 928589475968323636
+        betatester_role_id = 1113511652990668893
+        
+        allowed_role_ids = [huggingfolks_role_id, fellows_role_id, contentcreator_role_id, betatester_role_id]
+        guild = bot.get_guild(guild_id)
+        user_roles = message.author.roles
+        has_allowed_role = any(role.id in allowed_role_ids for role in user_roles)
+        if not has_allowed_role:
+            print(f"{ctx.author} does not have any of the required roles to activate the on_message check")
+            return False
+            
+        return True
+
+    except Exception as e:
+        print(f"Error: on_message_safetychecks failed somewhere, command will not continue {e}")
+#------------------------------------------------------------------------------------------------------------------------------
+
 @bot.command()
 async def deepfloydifdemo(ctx):
     try:
@@ -570,65 +606,66 @@ falcon_userid_threadid_dictionary = {}
 @bot.command()
 async def falcon(ctx, *, prompt: str):
     # todo: need to be careful with these, rework into something simpler
-    global falcon_users
-    global falcon_threads
-    global falcon_dictionary
-    global falcon_userid_threadid_dictionary
     try:
-        if ctx.channel.id == 1116089829147557999: # initial thread creation inside #falcon
-            if ctx.author.id not in falcon_users: # create a new one
+        global falcon_users
+        global falcon_threads
+        global falcon_dictionary
+        global falcon_userid_threadid_dictionary
+        if await safetychecks(ctx):
+            if ctx.channel.id == 1116089829147557999: # initial thread creation inside #falcon
+                if ctx.author.id not in falcon_users: # create a new one
+                    await ctx.message.add_reaction('<a:loading:1114111677990981692>')
+                    thread = await ctx.message.create_thread(name=f'{ctx.author}')
+                    falcon_users = [ctx.author.id] + falcon_users
+                    falcon_threads = [thread.id] + falcon_threads
+                    await thread.send(f"Thread created")
+                    
+                    # initial generation here
+                    chathistory = falconclient.predict( 
+                            fn_index=5
+                    ) # []
+                    instructions = "The following is a conversation between a highly knowledgeable and intelligent AI assistant, called Falcon, and a human user, called User. In the following interactions, User and Falcon will converse in natural language, and Falcon will answer User's questions. Falcon was built to be respectful, polite and inclusive. Falcon was built by the Technology Innovation Institute in Abu Dhabi. Falcon will never decline to answer a question, and always attempts to give an answer that User would be satisfied with. It knows a lot, and always tells the truth. The conversation begins."
+                    job = falconclient.submit(prompt, chathistory, instructions, 0.8, 0.9, fn_index=1)  # This is not blocking, similar to run_in_executor (but better)
+                    while job.done() == False: 
+                        status = job.status() # could be spammy, let's test anyways
+                        #print(status)
+                    else:
+                        file_paths = job.outputs()
+                        full_generation = file_paths[-1] # tmp12345678.json
+                    with open(full_generation, 'r') as file:
+                        data = json.load(file)
+                        output_text = data[-1][-1] # we output this as the bot
+                    falcon_dictionary[ctx.author.id] = full_generation # 1234567890: tmp12345678.json
+                    falcon_userid_threadid_dictionary[ctx.author.id] = thread.id
+                    print(output_text)
+                    await thread.send(f"{output_text}")     
+                    await ctx.message.remove_reaction('<a:loading:1114111677990981692>', bot.user)
+                elif ctx.author.id in falcon_users:
+                    await ctx.reply(f"{ctx.author.mention}, you already have an existing conversation! ")
+            #------------------------------------
+            if ctx.channel.id in falcon_threads: # subsequent chatting inside threads of #falcon
                 await ctx.message.add_reaction('<a:loading:1114111677990981692>')
-                thread = await ctx.message.create_thread(name=f'{ctx.author}')
-                falcon_users = [ctx.author.id] + falcon_users
-                falcon_threads = [thread.id] + falcon_threads
-                await thread.send(f"Thread created")
-                
-                # initial generation here
-                chathistory = falconclient.predict( 
-                        fn_index=5
-                ) # []
-                instructions = "The following is a conversation between a highly knowledgeable and intelligent AI assistant, called Falcon, and a human user, called User. In the following interactions, User and Falcon will converse in natural language, and Falcon will answer User's questions. Falcon was built to be respectful, polite and inclusive. Falcon was built by the Technology Innovation Institute in Abu Dhabi. Falcon will never decline to answer a question, and always attempts to give an answer that User would be satisfied with. It knows a lot, and always tells the truth. The conversation begins."
-                job = falconclient.submit(prompt, chathistory, instructions, 0.8, 0.9, fn_index=1)  # This is not blocking, similar to run_in_executor (but better)
-                while job.done() == False: 
-                    status = job.status() # could be spammy, let's test anyways
-                    #print(status)
-                else:
-                    file_paths = job.outputs()
-                    full_generation = file_paths[-1] # tmp12345678.json
-                with open(full_generation, 'r') as file:
-                    data = json.load(file)
-                    output_text = data[-1][-1] # we output this as the bot
-                falcon_dictionary[ctx.author.id] = full_generation # 1234567890: tmp12345678.json
-                falcon_userid_threadid_dictionary[ctx.author.id] = thread.id
-                print(output_text)
-                await thread.send(f"{output_text}")     
-                await ctx.message.remove_reaction('<a:loading:1114111677990981692>', bot.user)
-            elif ctx.author.id in falcon_users:
-                await ctx.reply(f"{ctx.author.mention}, you already have an existing conversation! ")
-        #------------------------------------
-        if ctx.channel.id in falcon_threads: # subsequent chatting inside threads of #falcon
-            await ctx.message.add_reaction('<a:loading:1114111677990981692>')
-            #await ctx.reply(f"inside thread, only {ctx.author} is allowed to chat here")
-            # post all other generations here
-            thread_id_test = falcon_userid_threadid_dictionary[ctx.author.id]
-            if ctx.channel.id == thread_id_test:
-                chathistory = falcon_dictionary[ctx.author.id]
+                #await ctx.reply(f"inside thread, only {ctx.author} is allowed to chat here")
+                # post all other generations here
+                thread_id_test = falcon_userid_threadid_dictionary[ctx.author.id]
+                if ctx.channel.id == thread_id_test:
+                    chathistory = falcon_dictionary[ctx.author.id]
 
-                instructions = "The following is a conversation between a highly knowledgeable and intelligent AI assistant, called Falcon, and a human user, called User. In the following interactions, User and Falcon will converse in natural language, and Falcon will answer User's questions. Falcon was built to be respectful, polite and inclusive. Falcon was built by the Technology Innovation Institute in Abu Dhabi. Falcon will never decline to answer a question, and always attempts to give an answer that User would be satisfied with. It knows a lot, and always tells the truth. The conversation begins."
-                job = falconclient.submit(prompt, chathistory, instructions, 0.8, 0.9, fn_index=1)  # This is not blocking, similar to run_in_executor (but better)
-                while job.done() == False: 
-                    status = job.status() # could be spammy, let's test anyways
-                    #print(status)
-                else:
-                    file_paths = job.outputs()
-                    full_generation = file_paths[-1] # tmp12345678.json
-                with open(full_generation, 'r') as file:
-                    data = json.load(file)
-                    output_text = data[-1][-1] # we output this as the bot
-                falcon_dictionary[ctx.author.id] = full_generation 
-                print(output_text)
-                await ctx.reply(f"{output_text}")                
-                await ctx.message.remove_reaction('<a:loading:1114111677990981692>', bot.user)
+                    instructions = "The following is a conversation between a highly knowledgeable and intelligent AI assistant, called Falcon, and a human user, called User. In the following interactions, User and Falcon will converse in natural language, and Falcon will answer User's questions. Falcon was built to be respectful, polite and inclusive. Falcon was built by the Technology Innovation Institute in Abu Dhabi. Falcon will never decline to answer a question, and always attempts to give an answer that User would be satisfied with. It knows a lot, and always tells the truth. The conversation begins."
+                    job = falconclient.submit(prompt, chathistory, instructions, 0.8, 0.9, fn_index=1)  # This is not blocking, similar to run_in_executor (but better)
+                    while job.done() == False: 
+                        status = job.status() # could be spammy, let's test anyways
+                        #print(status)
+                    else:
+                        file_paths = job.outputs()
+                        full_generation = file_paths[-1] # tmp12345678.json
+                    with open(full_generation, 'r') as file:
+                        data = json.load(file)
+                        output_text = data[-1][-1] # we output this as the bot
+                    falcon_dictionary[ctx.author.id] = full_generation 
+                    print(output_text)
+                    await ctx.reply(f"{output_text}")                
+                    await ctx.message.remove_reaction('<a:loading:1114111677990981692>', bot.user)
             
     except Exception as e:
         print(f"Error: {e}")
@@ -638,39 +675,46 @@ async def falcon(ctx, *, prompt: str):
 #---------------------------------------------------------------------------------------------------------------------------- 
 @bot.event 
 async def on_message(message):
-    global falcon_userid_threadid_dictionary
-    global falcon_dictionary
-    try:    
-        # is this our unique channel (falcon thread?)
-        if message.channel.id == falcon_userid_threadid_dictionary[message.author.id]:
-            await message.add_reaction('<a:loading:1114111677990981692>') # helps the bot appear responsive
-            chathistory = falcon_dictionary[message.author.id]
-            instructions = "The following is a conversation between a highly knowledgeable and intelligent AI assistant, " \
-            "called Falcon, and a human user, called User. In the following interactions, " \
-            "User and Falcon will converse in natural language, and Falcon will answer User's questions. " \
-            "Falcon was built to be respectful, polite and inclusive. " \
-            "Falcon was built by the Technology Innovation Institute in Abu Dhabi. " \
-            "Falcon will never decline to answer a question, and always attempts to give an answer that " \
-            "User would be satisfied with. It knows a lot, and always tells the truth. The conversation begins."
-            # handles the blocking task in the background so the discord bot stays responsive
-            # for added security, we could verify if message.content contains symbols used in commands; But those will fail anyways (see safetychecks)
-            job = falconclient.submit(message.content, chathistory, instructions, 0.8, 0.9, fn_index=1)  # job is similar to run_in_executor (but better)
-            while job.done() == False: 
-                status = job.status() # this could be used for debugging etc
-                #print(status)
-            else:
-                file_paths = job.outputs() # file_paths = ["tmp123.json", "tmp456.json," etc...]
-                full_generation = file_paths[-1] # the last filepath contains the full generated text
-                with open(full_generation, 'r') as file:
-                    data = json.load(file)
-                    output_text = data[-1][-1] # we only need the very last/latest string for the discord bot to output
-                falcon_dictionary[message.author.id] = full_generation # update our unique conversation
-                print(output_text) 
-                await message.reply(f"{output_text}") # reply to user's prompt (whatever they typed)               
-                await message.remove_reaction('<a:loading:1114111677990981692>', bot.user)
+    await asyncio.sleep(5) 
+    # message.author.roles
+    # bot
+    # channel?
+    try:   
+        if on_message_safetychecks(message):
+            global falcon_userid_threadid_dictionary
+            global falcon_dictionary 
+            # is this our unique channel (falcon thread?)
+            if message.channel.id == falcon_userid_threadid_dictionary[message.author.id]:
+                await message.add_reaction('<a:loading:1114111677990981692>') # helps the bot appear responsive
+                chathistory = falcon_dictionary[message.author.id]
+                instructions = "The following is a conversation between a highly knowledgeable and intelligent AI assistant, " \
+                "called Falcon, and a human user, called User. In the following interactions, " \
+                "User and Falcon will converse in natural language, and Falcon will answer User's questions. " \
+                "Falcon was built to be respectful, polite and inclusive. " \
+                "Falcon was built by the Technology Innovation Institute in Abu Dhabi. " \
+                "Falcon will never decline to answer a question, and always attempts to give an answer that " \
+                "User would be satisfied with. It knows a lot, and always tells the truth. The conversation begins."
+                # handles the blocking task in the background so the discord bot stays responsive
+                # for added security, we could verify if message.content contains symbols used in commands; But those will fail anyways (see safetychecks)
+                job = falconclient.submit(message.content, chathistory, instructions, 0.8, 0.9, fn_index=1)  # job is similar to run_in_executor (but better)
+                while job.done() == False: 
+                    status = job.status() # this could be used for debugging etc
+                    #print(status)
+                else:
+                    file_paths = job.outputs() # file_paths = ["tmp123.json", "tmp456.json," etc...]
+                    full_generation = file_paths[-1] # the last filepath contains the full generated text
+                    with open(full_generation, 'r') as file:
+                        data = json.load(file)
+                        output_text = data[-1][-1] # we only need the very last/latest string for the discord bot to output
+                    falcon_dictionary[message.author.id] = full_generation # update our unique conversation
+                    print(output_text) 
+                    await message.reply(f"{output_text}") # reply to user's prompt (whatever they typed)               
+                    await message.remove_reaction('<a:loading:1114111677990981692>', bot.user)
     except Exception as e:
         print(f"Error: {e}")
-        await message.reply(f"{e} cc <@811235357663297546> (falcon error)") # ping lunarflu if something breaks   
+        if message.channel.id == 1116089829147557999:
+            await message.reply(f"{e} cc <@811235357663297546> (falcon error)") # ping lunarflu if something breaks
+            await asyncio.sleep(5)   
 #---------------------------------------------------------------------------------------------------------------------------- 
 # hackerllama magic to run the bot in a Hugging Face Space
 def run_bot():
