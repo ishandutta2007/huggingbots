@@ -672,7 +672,8 @@ async def falcon(ctx, *, prompt: str):
         await ctx.reply(f"{e} cc <@811235357663297546> (falconprivate error)")           
         await ctx.message.remove_reaction('<a:loading:1114111677990981692>', bot.user)        
         await ctx.message.add_reaction('<:disagree:1098628957521313892>')
-#---------------------------------------------------------------------------------------------------------------------------- 
+#----------------------------------------------------------------------------------------------------------------------------
+'''
 @bot.event 
 async def on_message(message):
     await asyncio.sleep(5) 
@@ -715,7 +716,8 @@ async def on_message(message):
         print(f"Error: {e}")
         if message.channel.id == 1116089829147557999:
             await message.reply(f"{e} cc <@811235357663297546> (falcon error)") # ping lunarflu if something breaks
-            await asyncio.sleep(5)   
+            await asyncio.sleep(5) 
+'''  
 #---------------------------------------------------------------------------------------------------------------------------- 
 # hackerllama magic to run the bot in a Hugging Face Space
 def run_bot():
