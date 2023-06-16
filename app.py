@@ -653,7 +653,7 @@ async def falcon(ctx, *, prompt: str):
             #------------------------------------
             # post all other generations here
             #if ctx.channel.id in falcon_threads: # deprecated
-            if ctx.channel.id in falcon_userid_threadid_dictionary:
+            if ctx.channel.id in falcon_userid_threadid_dictionary.values():
                 if ctx.channel.id == falcon_userid_threadid_dictionary[ctx.author.id]:
                     await ctx.message.add_reaction('<a:loading:1114111677990981692>')
                     chathistory = falcon_dictionary[ctx.author.id]
