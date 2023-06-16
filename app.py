@@ -651,7 +651,7 @@ async def falcon(ctx, *, prompt: str):
                 elif ctx.author.id in falcon_userid_threadid_dictionary:
                     # get the threadid, grab the last message in that thread, link to that message
                     thread_id = falcon_userid_threadid_dictionary[ctx.author.id]
-                    thread_link = f"https://discord.com/channels/879548962464493619/1116089829147557999/{thread.id}"
+                    thread_link = f"https://discord.com/channels/879548962464493619/1116089829147557999/{thread_id}"
                     await ctx.reply(f"{ctx.author.mention}, you already have an existing conversation here {thread_link}! Use !falconclear in the #falcon channel to start a new one.")
             #------------------------------------
             # post all other generations here
