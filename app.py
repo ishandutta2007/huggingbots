@@ -414,7 +414,7 @@ async def deepfloydif(ctx, *, prompt: str):
             #await thread.send(f'✅running blocking function in executor')  
             loop = asyncio.get_running_loop()
             result = await loop.run_in_executor(None, inference, prompt)
-            await thread.send(f'{ctx.author.mention}after executor')
+            #await thread.send(f'{ctx.author.mention}after executor')
             #await thread.send(f'✅run_in_executor ran successfully')            
             stage_1_results = result[0]
             stage_1_result_path = result[2]
