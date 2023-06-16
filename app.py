@@ -90,6 +90,7 @@ async def safetychecks(ctx):
             await ctx.message.add_reaction(failure_emoji)
             return False
     
+        # review this, may be able to remove
         #✅✅ check if the command is in the allowed channel(s)
         bot_test = 1100458786826747945
         deepfloydif_channel = 1113182673859518514
@@ -106,6 +107,7 @@ async def safetychecks(ctx):
             await ctx.message.add_reaction(failure_emoji)
             return False            
             
+        '''    
         #✅✅ check if the user has the required role(s)   
         guild_id = 879548962464493619
         verified_role_id = 900063512829755413  # @verified = 900063512829755413,  HF = 897376942817419265, fellows = 963431900825919498
@@ -124,7 +126,7 @@ async def safetychecks(ctx):
             await thread.send(f"Error: {ctx.author.mention} does not have any of the required roles to use that command.")
             await ctx.message.add_reaction(failure_emoji)
             return False
-            
+        '''   
     
         return True
 
