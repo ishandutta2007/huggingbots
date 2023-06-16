@@ -9,7 +9,7 @@ import time
 import re
 from discord import Embed, Color
 from discord.ext import commands
-# a
+# aa
 from gradio_client import Client
 from PIL import Image
 #from ratelimiter import RateLimiter
