@@ -599,7 +599,7 @@ async def on_reaction_add(reaction, user):    # ctx = await bot.get_context(reac
 #---------------------------------------------------------------------------------------------------------------------------- 
 chathistory = None
 falcon_users = []
-falcon_threads = []
+#falcon_threads = []
 falcon_dictionary = {}
 falcon_userid_threadid_dictionary = {}
 
@@ -608,16 +608,21 @@ async def falcon(ctx, *, prompt: str):
     # todo: need to be careful with these, rework into something simpler
     try:
         global falcon_users
-        global falcon_threads
+        #global falcon_threads # deprecated
         global falcon_dictionary
         global falcon_userid_threadid_dictionary
+
+        # dict[generation, authorid]
+        # dict[threadid, authorid]
+
         if not ctx.author.bot:
             if ctx.channel.id == 1116089829147557999: # initial thread creation inside #falcon
-                if ctx.author.id not in falcon_users: # create a new one
+                #if ctx.author.id not in falcon_users: # deprecated
+                if ctx.author.id not in falcon_userid_threadid_dictionary:
                     await ctx.message.add_reaction('<a:loading:1114111677990981692>')
                     thread = await ctx.message.create_thread(name=f'{ctx.author}')
-                    falcon_users = [ctx.author.id] + falcon_users
-                    falcon_threads = [thread.id] + falcon_threads
+                    #falcon_users = [ctx.author.id] + falcon_users # deprecated
+                    #falcon_threads = [thread.id] + falcon_threads # deprecated
                     await thread.send(f"Thread created")
                     
                     # initial generation here
@@ -635,20 +640,22 @@ async def falcon(ctx, *, prompt: str):
                     with open(full_generation, 'r') as file:
                         data = json.load(file)
                         output_text = data[-1][-1] # we output this as the bot
+
                     falcon_dictionary[ctx.author.id] = full_generation # 1234567890: tmp12345678.json
                     falcon_userid_threadid_dictionary[ctx.author.id] = thread.id
+
                     print(output_text)
                     await thread.send(f"{output_text}")     
                     await ctx.message.remove_reaction('<a:loading:1114111677990981692>', bot.user)
-                elif ctx.author.id in falcon_users:
-                    await ctx.reply(f"{ctx.author.mention}, you already have an existing conversation! ")
+                #elif ctx.author.id in falcon_users: # deprecated
+                elif ctx.author.id in falcon_userid_threadid_dictionary:
+                    await ctx.reply(f"{ctx.author.mention}, you already have an existing conversation! Use !falconclear in the #falcon channel to start a new one.")
             #------------------------------------
-            if ctx.channel.id in falcon_threads: # subsequent chatting inside threads of #falcon
-                await ctx.message.add_reaction('<a:loading:1114111677990981692>')
-                #await ctx.reply(f"inside thread, only {ctx.author} is allowed to chat here")
-                # post all other generations here
-                thread_id_test = falcon_userid_threadid_dictionary[ctx.author.id]
-                if ctx.channel.id == thread_id_test:
+            # post all other generations here
+            #if ctx.channel.id in falcon_threads: # deprecated
+            if ctx.channel.id in falcon_userid_threadid_dictionary:
+                if ctx.channel.id == falcon_userid_threadid_dictionary[ctx.author.id]:
+                    await ctx.message.add_reaction('<a:loading:1114111677990981692>')
                     chathistory = falcon_dictionary[ctx.author.id]
 
                     instructions = "The following is a conversation between a highly knowledgeable and intelligent AI assistant, called Falcon, and a human user, called User. In the following interactions, User and Falcon will converse in natural language, and Falcon will answer User's questions. Falcon was built to be respectful, polite and inclusive. Falcon was built by the Technology Innovation Institute in Abu Dhabi. Falcon will never decline to answer a question, and always attempts to give an answer that User would be satisfied with. It knows a lot, and always tells the truth. The conversation begins."
@@ -673,6 +680,19 @@ async def falcon(ctx, *, prompt: str):
         await ctx.message.remove_reaction('<a:loading:1114111677990981692>', bot.user)        
         await ctx.message.add_reaction('<:disagree:1098628957521313892>')
 #----------------------------------------------------------------------------------------------------------------------------
+@bot.command
+async def falconclear(ctx):
+    if not ctx.author.bot:
+        if ctx.channel.id == 1116089829147557999:
+            if ctx.author.id in falcon_userid_threadid_dictionary:
+                if ctx.author.id in falcon_dictionary:
+                    del falcon_userid_threadid_dictionary[ctx.author.id]
+                    del falcon_dictionary[ctx.author.id]
+                    await ctx.reply(f"{ctx.author.mention}'s conversation has been cleared. Feel free to start a new one!")
+#----------------------------------------------------------------------------------------------------------------------------
+
+
+
 '''
 @bot.event 
 async def on_message(message):
