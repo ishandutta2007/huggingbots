@@ -53,24 +53,10 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
 #---------------------------------------------------------------------------------------------------------------------------------------------
-@bot.command()
-async def info(ctx):
-    current_directory = os.getcwd()
-    temp_directory = tempfile.gettempdir()
-    await ctx.reply(f"current_directory={current_directory}\n temp_directory={temp_directory}")
-#---------------------------------------------------------------------------------------------------------------------------------------------
 @bot.event
 async def on_ready():
     print('Logged on as', bot.user)
     bot.log_channel = bot.get_channel(1100458786826747945) # 1100458786826747945 = bot-test, 1107006391547342910 = lunarbot server  
-#--------------------------------------------------------------------------------------------------------------------------------------------- 
-@bot.command()
-async def commands(ctx):
-    try:
-        if await safetychecks(ctx):    
-            await ctx.reply(f"Use !deepfloydif [prompt], !jojo !spidey or !sketch. Have fun! 🤗💖")
-    except Exception as e:
-        print(f"Error: unable to help :( {e}")   
 #---------------------------------------------------------------------------------------------------------------------------------------------   
 async def safetychecks(ctx): 
     failure_emoji = '<:disagree:1098628957521313892>' 
@@ -90,14 +76,12 @@ async def safetychecks(ctx):
             await ctx.message.add_reaction(failure_emoji)
             return False
     
+        '''
         # review this, may be able to remove
         #✅✅ check if the command is in the allowed channel(s)
         bot_test = 1100458786826747945
-        deepfloydif_channel = 1113182673859518514
-        jojo_channel = 1114217739473649764
-        sketch_channel = 1114218145343877180
-        spidey_channel = 1114218191594471514
-        falcon_channel = 1116089829147557999
+        deepfloydif_channel = 1119313215675973714
+        falcon_channel = 1119313248056004729
         
         channel_ids = [bot_test, deepfloydif_channel, jojo_channel, spidey_channel, sketch_channel, falcon_channel]
         if ctx.channel.id not in channel_ids: 
@@ -105,7 +89,8 @@ async def safetychecks(ctx):
             thread = await ctx.message.create_thread(name=f'Channel Error')
             await thread.send(f"Error: {ctx.author.mention} commands are not permitted in {ctx.channel}")
             await ctx.message.add_reaction(failure_emoji)
-            return False            
+            return False  
+        '''          
             
         '''    
         #✅✅ check if the user has the required role(s)   
@@ -135,199 +120,8 @@ async def safetychecks(ctx):
         print(f"Error: safetychecks failed somewhere, command will not continue, {e}")
         await ctx.message.reply(f"❌ <@811235357663297546> SC failed somewhere ❌ {e}") # this will always ping, as long as the bot has access to the channel
         await ctx.message.add_reaction(failure_emoji)
-#------------------------------------------------------------------------------------------------------------------------------
-async def on_message_safetychecks(message): 
-    failure_emoji = '<:disagree:1098628957521313892>' 
-    try:
-        if message.author.bot:
-            print(f"The bot will ignore its own messages.")
-            return False
-    
-        # check if the bot is offline 
-        offline_bot_role_id = 1103676632667017266
-        bot_member = message.guild.get_member(bot.user.id)
-        if any(role.id == offline_bot_role_id for role in bot_member.roles):
-            print(f"{message.author} The bot is offline or under maintenance. (Remove the offline-bot role to bring it online)") 
-            return False          
-            
-        #✅✅ check if the user has the required role(s)   
-        guild_id = 879548962464493619
-        verified_role_id = 900063512829755413  # @verified = 900063512829755413,  HF = 897376942817419265, fellows = 963431900825919498
-        huggingfolks_role_id = 897376942817419265
-        fellows_role_id = 963431900825919498
-        contentcreator_role_id = 928589475968323636
-        betatester_role_id = 1113511652990668893
-        
-        allowed_role_ids = [huggingfolks_role_id, fellows_role_id, contentcreator_role_id, betatester_role_id]
-        guild = bot.get_guild(guild_id)
-        user_roles = message.author.roles
-        has_allowed_role = any(role.id in allowed_role_ids for role in user_roles)
-        if not has_allowed_role:
-            print(f"{ctx.author} does not have any of the required roles to activate the on_message check")
-            return False
-            
-        return True
-
-    except Exception as e:
-        print(f"Error: on_message_safetychecks failed somewhere, command will not continue {e}")
-#------------------------------------------------------------------------------------------------------------------------------
-
-@bot.command()
-async def deepfloydifdemo(ctx):
-    try:
-        thread = await ctx.message.create_thread(name=f'{ctx.author} Demo Thread')
-        await thread.send(f'{ctx.author.mention} Here is a demo for the !deepfloydif command!')
-        await asyncio.sleep(0.5)
-        await thread.send(f'https://cdn.discordapp.com/attachments/932563860597121054/1113483403258499142/image.png')
-    except Exception as e:
-        print(f"Error: {e}")
-        await ctx.message.add_reaction('<:disagree:1098628957521313892>')
-#---------------------------------------------------------------------------------------------------------------------------------------------- 
-@bot.command()
-async def jojodemo(ctx):
-    try:
-        thread = await ctx.message.create_thread(name=f'JoJo Demo {ctx.author} ')
-        await thread.send(f'{ctx.author.mention} Here is a demo for the !jojo command!')
-        await asyncio.sleep(0.5)
-        await thread.send(f'https://cdn.discordapp.com/attachments/932563860597121054/1114220616199966810/image.png')
-        await thread.edit(archived=True)        
-    except Exception as e:
-        print(f"Error: {e}")
-        await ctx.message.add_reaction('<:disagree:1098628957521313892>')
-        await thread.edit(archived=True)        
-#---------------------------------------------------------------------------------------------------------------------------------------------- 
-@bot.command()
-async def sketchdemo(ctx):
-    try:
-        thread = await ctx.message.create_thread(name=f'Sketch Demo {ctx.author} ')
-        await thread.send(f'{ctx.author.mention} Here is a demo for the !sketch command!')
-        await asyncio.sleep(0.5)
-        await thread.send(f'https://cdn.discordapp.com/attachments/932563860597121054/1114220716498370641/image.png')
-        await thread.edit(archived=True)        
-    except Exception as e:
-        print(f"Error: {e}")
-        await ctx.message.add_reaction('<:disagree:1098628957521313892>')
-        await thread.edit(archived=True)        
-#---------------------------------------------------------------------------------------------------------------------------------------------- 
-@bot.command()
-async def spideydemo(ctx):
-    try:
-        thread = await ctx.message.create_thread(name=f'Spidey Demo {ctx.author} ')
-        await thread.send(f'{ctx.author.mention} Here is a demo for the !spidey command!')
-        await asyncio.sleep(0.5)
-        await thread.send(f'https://cdn.discordapp.com/attachments/932563860597121054/1114220798085959690/image.png')
-        await thread.edit(archived=True)
-    except Exception as e:
-        print(f"Error: {e}")
-        await ctx.message.add_reaction('<:disagree:1098628957521313892>')
-        await thread.edit(archived=True)        
-#----------------------------------------------------------------------------------------------------------------------------------------------         
-# jojo ✅
-@bot.command()
-async def jojo(ctx):
-    # img + face    ✅
-    # img + no face ✅
-    # no image      ✅
-    # no generation ✅
-    # responsive?   ✅
-    # ratelimits?   ❌
-    # safety checks?✅
-    # bot no crash  ✅
-    try:  
-        if await safetychecks(ctx): #✅
-            if ctx.channel.id == 1114217739473649764:
-                await ctx.message.add_reaction('<a:loading:1114111677990981692>') 
-                thread = await ctx.message.create_thread(name=f'Jojo | {ctx.author}', auto_archive_duration=60)         
-                if ctx.message.attachments:
-                    await thread.send(f'{ctx.author.mention} Generating images in thread, can take ~1 minute...yare yare, daze ...')  
-                    attachment = ctx.message.attachments[0]
-                    style = 'JoJo'
-                    #im = jojogan.predict(attachment.url, style)
-                    im = await asyncio.get_running_loop().run_in_executor(None, jojogan.predict, attachment.url, style)
-                    #await ctx.message.reply(f'Here is the {style} version of it', file=discord.File(im))
-                    await thread.send(f'{ctx.author.mention} Here is the {style} version of it', file=discord.File(im))
-    
-                    #testing animated
-                    # <a:hugging_spin:1102656012621713488>
-                    await ctx.message.add_reaction('<:agree:1098629085955113011>') # ✅   
-                    await ctx.message.remove_reaction('<a:loading:1114111677990981692>', bot.user)
-                    await thread.edit(archived=True)
-                else: # no image
-                    await thread.send(f"{ctx.author.mention} No attachments to be found...Can't animify dat! Try sending me an image 😉")
-                    await ctx.message.add_reaction('<:disagree:1098628957521313892>') # ❌
-                    await ctx.message.remove_reaction('<a:loading:1114111677990981692>', bot.user)
-                    await thread.edit(archived=True)
-    except Exception as e: # no generation / img + no face
-        await fullqueue(e, thread)  
-        print(f"Error: {e}")
-        await thread.send(f"{ctx.author.mention} Error: {e}")
-        await ctx.message.add_reaction('<:disagree:1098628957521313892>') # ❌
-        await ctx.message.remove_reaction('<a:loading:1114111677990981692>', bot.user)
-        await thread.edit(archived=True)
-    
-   
-#---------------------------------------------------------------------------------------------------------------------------------------------- 
-# Spider-Verse ✅
-@bot.command()
-async def spidey(ctx):
-    try:
-        if await safetychecks(ctx): #✅ 
-            if ctx.channel.id == 1114218191594471514:
-                await ctx.message.add_reaction('<a:loading:1114111677990981692>') 
-                thread = await ctx.message.create_thread(name=f'Spider-verse | {ctx.author}', auto_archive_duration=60)         
-                if ctx.message.attachments:
-                    await thread.send(f'{ctx.author.mention} Generating images in thread, can take ~1 minute...')  
-                    attachment = ctx.message.attachments[0]
-                    style = 'Spider-Verse'
-                    im = await asyncio.get_running_loop().run_in_executor(None, jojogan.predict, attachment.url, style)
-                    await thread.send(f'{ctx.author.mention} Here is the {style} version of it', file=discord.File(im))
-                    await ctx.message.add_reaction('<:agree:1098629085955113011>') # img + face    
-                    await ctx.message.remove_reaction('<a:loading:1114111677990981692>', bot.user) 
-                    await thread.edit(archived=True)                
-                else: # no image
-                    await thread.send(f"{ctx.author.mention} No attachments to be found...Can't animify dat! Try sending me an image 😉")
-                    await ctx.message.add_reaction('<:disagree:1098628957521313892>')  
-                    await ctx.message.remove_reaction('<a:loading:1114111677990981692>', bot.user)
-                    await thread.edit(archived=True)                
-    except Exception as e: # no generation / img + no face
-        await fullqueue(e, thread)       
-        print(f"Error: {e}")
-        await thread.send(f"{ctx.author.mention} Error: {e}")
-        await ctx.message.add_reaction('<:disagree:1098628957521313892>') 
-        await ctx.message.remove_reaction('<a:loading:1114111677990981692>', bot.user)
-        await thread.edit(archived=True)        
-#---------------------------------------------------------------------------------------------------------------------------------------------- 
-# sketch ✅
-@bot.command()
-async def sketch(ctx):
-    try:    
-        if await safetychecks(ctx): #✅
-            if ctx.channel.id == 1114218145343877180:
-                await ctx.message.add_reaction('<a:loading:1114111677990981692>') 
-                thread = await ctx.message.create_thread(name=f'Sketch | {ctx.author}', auto_archive_duration=60)         
-                if ctx.message.attachments:
-                    await thread.send(f'{ctx.author.mention} Generating images in thread, can take ~1 minute...')  
-                    attachment = ctx.message.attachments[0]
-                    #style = 'sketch'
-                    im = await asyncio.get_running_loop().run_in_executor(None, jojogan.predict, attachment.url, 'sketch')
-                    await thread.send(f'{ctx.author.mention} Here is the sketch version of it', file=discord.File(im))
-                    await ctx.message.add_reaction('<:agree:1098629085955113011>') # img + face 
-                    await ctx.message.remove_reaction('<a:loading:1114111677990981692>', bot.user) 
-                    await thread.edit(archived=True)                
-                else: # no image
-                    await thread.send(f"{ctx.author.mention} No attachments to be found...Can't animify dat! Try sending me an image 😉")
-                    await ctx.message.add_reaction('<:disagree:1098628957521313892>') 
-                    await ctx.message.remove_reaction('<a:loading:1114111677990981692>', bot.user)
-                    await thread.edit(archived=True)                
-    except Exception as e: # no generation / img + no face
-        await fullqueue(e, thread)  
-        print(f"Error: {e}")
-        await thread.send(f"{ctx.author.mention} Error: {e}")
-        await ctx.message.add_reaction('<:disagree:1098628957521313892>') 
-        await ctx.message.remove_reaction('<a:loading:1114111677990981692>', bot.user)
-        await thread.edit(archived=True)        
 #----------------------------------------------------------------------------------------------------------------------------------------------
-async def fullqueue(e, thread):
+async def fullqueue(e, thread): # can improve this using jobs from gradio
     error_message = str(e)
     if "Error: Expecting value: line 1 column 1 (char 0)" in error_message:
         await thread.send("Queue is full! Please try again.")
@@ -338,8 +132,6 @@ async def fullqueue(e, thread):
         await thread.send("Space is building! Please try again after a few minutes.")    
 
 #----------------------------------------------------------------------------------------------------------------------------------------------  
-
-
 # deepfloydif stage 1 generation ✅
 def inference(prompt):
     negative_prompt = ''
@@ -379,7 +171,7 @@ async def deepfloydif(ctx, *, prompt: str):
     try:
         try:
             if await safetychecks(ctx): #✅
-                if ctx.channel.id == 1113182673859518514:
+                if ctx.channel.id == 1119313215675973714:
                     await ctx.message.add_reaction('<a:loading:1114111677990981692>') 
                     dfif_command_message_id = ctx.message.id # we will use this in some magic later on
                     thread = await ctx.message.create_thread(name=f'DeepfloydIF | {prompt}', auto_archive_duration=60) # could also just use prompt, no deepfloydif
@@ -560,7 +352,7 @@ async def on_reaction_add(reaction, user):    # ctx = await bot.get_context(reac
         if not user.bot: 
             thread = reaction.message.channel
             threadparentid = thread.parent.id
-            if threadparentid == 1113182673859518514: # testing-the-bot, should be whatever the deepfloydif channel is
+            if threadparentid == 1119313215675973714: # testing-the-bot, should be whatever the deepfloydif channel is
                 # 811235357663297546 =  lunarflu
                 if reaction.message.attachments:
                     if user.id == reaction.message.mentions[0].id:  #  if user.id == reaction.message.mentions[0].id:           
@@ -618,7 +410,7 @@ async def falcon(ctx, *, prompt: str):
         # dict[threadid, authorid]
 
         if not ctx.author.bot:
-            if ctx.channel.id == 1116089829147557999: # initial thread creation inside #falcon
+            if ctx.channel.id == 1119313248056004729: # initial thread creation inside #falcon
                 #if ctx.author.id not in falcon_users: # deprecated
                 if ctx.author.id not in falcon_userid_threadid_dictionary:
                     await ctx.message.add_reaction('<a:loading:1114111677990981692>')
@@ -653,7 +445,7 @@ async def falcon(ctx, *, prompt: str):
                 elif ctx.author.id in falcon_userid_threadid_dictionary:
                     # get the threadid, grab the last message in that thread, link to that message
                     thread_id = falcon_userid_threadid_dictionary[ctx.author.id]
-                    thread_link = f"https://discord.com/channels/879548962464493619/1116089829147557999/{thread_id}"
+                    thread_link = f"https://discord.com/channels/879548962464493619/1119313248056004729/{thread_id}"
                     await ctx.reply(f"{ctx.author.mention}, you already have an existing conversation here {thread_link}! Use !falconclear in the #falcon channel to start a new one.")
             #------------------------------------
             # post all other generations here
@@ -688,61 +480,12 @@ async def falcon(ctx, *, prompt: str):
 @bot.command()
 async def falconclear(ctx):
     if not ctx.author.bot:
-        if ctx.channel.id == 1116089829147557999:
+        if ctx.channel.id == 1119313248056004729:
             if ctx.author.id in falcon_userid_threadid_dictionary:
                 if ctx.author.id in falcon_dictionary:
                     del falcon_userid_threadid_dictionary[ctx.author.id]
                     del falcon_dictionary[ctx.author.id]
                     await ctx.reply(f"{ctx.author.mention}'s conversation has been cleared. Feel free to start a new one!")
-#----------------------------------------------------------------------------------------------------------------------------
-
-
-
-'''
-@bot.event 
-async def on_message(message):
-    await asyncio.sleep(5) 
-    # message.author.roles
-    # bot
-    # channel?
-    try:   
-        if await on_message_safetychecks(message):
-            global falcon_userid_threadid_dictionary
-            global falcon_dictionary 
-            # is this our unique channel (falcon thread?)
-            if message.author.id in falcon_userid_threadid_dictionary:
-                if message.channel.id == falcon_userid_threadid_dictionary[message.author.id]:
-                    await message.add_reaction('<a:loading:1114111677990981692>') # helps the bot appear responsive
-                    chathistory = falcon_dictionary[message.author.id]
-                    instructions = "The following is a conversation between a highly knowledgeable and intelligent AI assistant, " \
-                    "called Falcon, and a human user, called User. In the following interactions, " \
-                    "User and Falcon will converse in natural language, and Falcon will answer User's questions. " \
-                    "Falcon was built to be respectful, polite and inclusive. " \
-                    "Falcon was built by the Technology Innovation Institute in Abu Dhabi. " \
-                    "Falcon will never decline to answer a question, and always attempts to give an answer that " \
-                    "User would be satisfied with. It knows a lot, and always tells the truth. The conversation begins."
-                    # handles the blocking task in the background so the discord bot stays responsive
-                    # for added security, we could verify if message.content contains symbols used in commands; But those will fail anyways (see safetychecks)
-                    job = falconclient.submit(message.content, chathistory, instructions, 0.8, 0.9, fn_index=1)  # job is similar to run_in_executor (but better)
-                    while job.done() == False: 
-                        status = job.status() # this could be used for debugging etc
-                        #print(status)
-                    else:
-                        file_paths = job.outputs() # file_paths = ["tmp123.json", "tmp456.json," etc...]
-                        full_generation = file_paths[-1] # the last filepath contains the full generated text
-                        with open(full_generation, 'r') as file:
-                            data = json.load(file)
-                            output_text = data[-1][-1] # we only need the very last/latest string for the discord bot to output
-                        falcon_dictionary[message.author.id] = full_generation # update our unique conversation
-                        print(output_text) 
-                        await message.reply(f"{output_text}") # reply to user's prompt (whatever they typed)               
-                        await message.remove_reaction('<a:loading:1114111677990981692>', bot.user)
-    except Exception as e:
-        print(f"Error: {e}")
-        if message.channel.id == 1116089829147557999:
-            await message.reply(f"{e} cc <@811235357663297546> (falcon error)") # ping lunarflu if something breaks
-            await asyncio.sleep(5) 
-'''  
 #---------------------------------------------------------------------------------------------------------------------------- 
 # hackerllama magic to run the bot in a Hugging Face Space
 def run_bot():
