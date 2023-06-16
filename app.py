@@ -680,7 +680,7 @@ async def falcon(ctx, *, prompt: str):
         await ctx.message.remove_reaction('<a:loading:1114111677990981692>', bot.user)        
         await ctx.message.add_reaction('<:disagree:1098628957521313892>')
 #----------------------------------------------------------------------------------------------------------------------------
-@bot.command
+@bot.command()
 async def falconclear(ctx):
     if not ctx.author.bot:
         if ctx.channel.id == 1116089829147557999:
