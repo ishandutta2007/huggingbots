@@ -417,7 +417,7 @@ async def falcon(ctx, *, prompt: str):
                     thread = await ctx.message.create_thread(name=f'{ctx.author}')
                     #falcon_users = [ctx.author.id] + falcon_users # deprecated
                     #falcon_threads = [thread.id] + falcon_threads # deprecated
-                    await thread.send(f"Thread created")
+                    await thread.send(f"[DISCLAIMER: HuggingBot is a **highly experimental** beta feature; The Falcon model and system prompt can be found here: https://huggingface.co/spaces/HuggingFaceH4/falcon-chat]")
                     
                     # initial generation here
                     chathistory = falconclient.predict( 
