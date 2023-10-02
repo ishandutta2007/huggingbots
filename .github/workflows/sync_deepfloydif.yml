@@ -19,3 +19,4 @@ jobs:
         hf_token: ${{ secrets.HF_TOKEN_WRITE }}
         files: |
           /deepfloydif/deepfloydif.py: lunarflu/deepfloydIF-bot
+          /deepfloydif/requirements.txt: lunarflu/deepfloydIF-bot
