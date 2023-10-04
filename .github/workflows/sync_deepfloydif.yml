@@ -17,4 +17,4 @@ jobs:
         repo_type: space
         space_sdk: gradio
         hf_token: ${{ secrets.HF_TOKEN_WRITE }}
-        subdirectory: deepfloydIF
+        subdirectory: deepfloydif
