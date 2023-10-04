@@ -1,0 +1,36 @@
+name: Sync with Hugging Face Hub
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Sync with Hugging Face (DeepfloydIF)
+      uses: nateraw/huggingface-sync-action@v0.0.4
+      with:
+        github_repo_id: lunarflu/huggingbots
+        huggingface_repo_id: lunarflu/deepfloydIF-bot
+        repo_type: space
+        space_sdk: gradio
+        hf_token: ${{ secrets.HF_TOKEN_DEEPFLOYDIF }}
+        subdirectory: deepfloydIF
+        files: |
+          /deepfloydif/deepfloydif.py: lunarflu/deepfloydIF-bot
+          /deepfloydif/requirements.txt: lunarflu/deepfloydIF-bot
+
+    - name: Sync with Hugging Face (Falcon180b)
+      uses: nateraw/huggingface-sync-action@v0.0.4
+      with:
+        github_repo_id: lunarflu/huggingbots
+        huggingface_repo_id: lunarflu/falcon180b-bot
+        repo_type: space
+        space_sdk: gradio
+        hf_token: ${{ secrets.HF_TOKEN_FALCON180B }}
+        subdirectory: falcon180b
+        files: |
+          /falcon180b/falcon180b.py: lunarflu/falcon180b-bot
+          /falcon180b/requirements.txt: lunarflu/falcon180b-bot
