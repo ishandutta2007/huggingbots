@@ -17,9 +17,9 @@ jobs:
         repo_type: space
         space_sdk: gradio
         hf_token: ${{ secrets.HF_TOKEN_DEEPFLOYDIF }}
-        subdirectory: deepfloydIF
+        subdirectory: deepfloydIf
         files: |
-          /deepfloydif/deepfloydif.py: lunarflu/deepfloydIF-bot
+          /deepfloydif/app.py: lunarflu/deepfloydIF-bot
           /deepfloydif/requirements.txt: lunarflu/deepfloydIF-bot
 
     - name: Sync with Hugging Face (Falcon180b)
@@ -32,5 +32,5 @@ jobs:
         hf_token: ${{ secrets.HF_TOKEN_FALCON180B }}
         subdirectory: falcon180b
         files: |
-          /falcon180b/falcon180b.py: lunarflu/falcon180b-bot
+          /falcon180b/app.py: lunarflu/falcon180b-bot
           /falcon180b/requirements.txt: lunarflu/falcon180b-bot
