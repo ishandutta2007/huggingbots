@@ -16,7 +16,7 @@ jobs:
         huggingface_repo_id: lunarflu/deepfloydIF-bot
         repo_type: space
         space_sdk: gradio
-        hf_token: ${{ secrets.HF_TOKEN_DEEPFLOYDIF }}
+        hf_token: ${{ secrets.HF_TOKEN_WRITE }}
         subdirectory: deepfloydIf
         files: |
           /deepfloydif/app.py: lunarflu/deepfloydIF-bot
@@ -29,7 +29,7 @@ jobs:
         huggingface_repo_id: lunarflu/falcon180b-bot
         repo_type: space
         space_sdk: gradio
-        hf_token: ${{ secrets.HF_TOKEN_FALCON180B }}
+        hf_token: ${{ secrets.HF_TOKEN_WRITE }}
         subdirectory: falcon180b
         files: |
           /falcon180b/app.py: lunarflu/falcon180b-bot
