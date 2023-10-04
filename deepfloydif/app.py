@@ -13,7 +13,6 @@ from discord.ext import commands
 
 from discord.ui import Button, View
 
-# test2
 
 HF_TOKEN = os.getenv("HF_TOKEN")
 deepfloydif_client = Client("huggingface-projects/IF", HF_TOKEN)
