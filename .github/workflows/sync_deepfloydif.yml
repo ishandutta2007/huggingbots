@@ -21,7 +21,6 @@ jobs:
         files: |
           app.py: lunarflu/deepfloydIF-bot
           requirements.txt: lunarflu/deepfloydIF-bot
-
     - name: Sync with Hugging Face (Falcon180b)
       uses: nateraw/huggingface-sync-action@v0.0.4
       with:
@@ -34,7 +33,6 @@ jobs:
         files: |
           app.py: lunarflu/falcon180b-bot
           requirements.txt: lunarflu/falcon180b-bot
-
       - name: Sync with Hugging Face (Codellama)
       uses: nateraw/huggingface-sync-action@v0.0.4
       with:
@@ -47,7 +45,6 @@ jobs:
         files: |
           app.py: lunarflu/codellama-bot
           requirements.txt: lunarflu/codellama-bot
-
     - name: Sync with Hugging Face (Wuerstchen)
       uses: nateraw/huggingface-sync-action@v0.0.4
       with:
