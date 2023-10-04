@@ -20,3 +20,5 @@ jobs:
         files: |
           /deepfloydif/deepfloydif.py: lunarflu/deepfloydIF-bot
           /deepfloydif/requirements.txt: lunarflu/deepfloydIF-bot
+          /falcon180b/falcon180b.py: lunarflu/falcon180b-bot
+          /falcon180b/requirements.txt: lunarflu/falcon180b-bot
