@@ -1,4 +1,4 @@
-name: Sync with Hugging Face Hub
+name: Sync with Hugging Face Hub (DeepfloydIF)
 
 on:
   push:
@@ -12,8 +12,10 @@ jobs:
     - name: Sync with Hugging Face
       uses: nateraw/huggingface-sync-action@v0.0.4
       with:
-        github_repo_id: lunarflu/huggingbots/deepfloydif
-        huggingface_repo_id: lunarflu/deepfloydif-bot
+        github_repo_id: lunarflu/huggingbots
+        huggingface_repo_id: lunarflu/deepfloydIF-bot
         repo_type: space
         space_sdk: gradio
         hf_token: ${{ secrets.HF_TOKEN_WRITE }}
+        files: |
+          /deepfloydif/deepfloydif.py: lunarflu/deepfloydIF-bot
