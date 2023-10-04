@@ -14,7 +14,7 @@ event = Event()
 
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
-
+# test
 async def wait(job):
     while not job.done():
         await asyncio.sleep(0.2)
