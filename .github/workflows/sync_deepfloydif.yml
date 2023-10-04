@@ -13,10 +13,7 @@ jobs:
       uses: nateraw/huggingface-sync-action@v0.0.4
       with:
         github_repo_id: lunarflu/huggingbots
-        huggingface_repo_id: lunarflu/deepfloydIF-bot
+        huggingface_repo_id: lunarflu/deepfloydif-bot
         repo_type: space
         space_sdk: gradio
         hf_token: ${{ secrets.HF_TOKEN_WRITE }}
-        files: |
-          /deepfloydif/deepfloydif.py: lunarflu/deepfloydIF-bot
-          /deepfloydif/requirements.txt: lunarflu/deepfloydIF-bot
